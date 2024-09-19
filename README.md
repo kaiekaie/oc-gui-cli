@@ -13,6 +13,7 @@ OC CLI GUI is a graphical user interface for the OpenShift `oc` command-line too
 ## Prerequisites
 
 - Ensure you have the `oc` CLI installed. You can download it from the [OpenShift CLI documentation](https://docs.openshift.com/container-platform/latest/cli_reference/openshift_cli/getting-started-cli.html).
+- Ensure you have Rust installed. You can download it from the [Rust website](https://www.rust-lang.org/).
 
 ## Installation
 
@@ -20,4 +21,3 @@ OC CLI GUI is a graphical user interface for the OpenShift `oc` command-line too
    ```sh
    git clone https://github.com/yourusername/oc-cli-gui.git
    cd oc-cli-gui
-   ```
