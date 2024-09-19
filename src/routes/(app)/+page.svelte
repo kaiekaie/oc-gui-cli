@@ -1,0 +1,124 @@
+<script lang="ts">
+  import { WebviewWindow } from "@tauri-apps/api/window";
+
+  import { onMount } from "svelte";
+  import { invoke } from "@tauri-apps/api";
+
+  import { listen } from "@tauri-apps/api/event";
+  import { appWindow, LogicalSize } from "@tauri-apps/api/window";
+
+  import deployments, { getDeployments } from "$lib/deployments.svelte";
+  let showReplicas = $state<string[]>([]);
+  let deploymentsElement: HTMLElement;
+  onMount(async () => {
+    await getDeployments();
+    await invoke("init_process", { seconds: 60 });
+
+    await appWindow.setSize(
+      new LogicalSize(
+        deploymentsElement.offsetWidth,
+        deploymentsElement.offsetHeight,
+      ),
+    );
+    const unlisten = await listen("event-name", async (event) => {
+      await getDeployments();
+    });
+
+    () => {
+      unlisten();
+    };
+  });
+
+  function getPods(value: string) {
+    return deployments.pods?.length
+      ? deployments.pods
+          .filter((e) => e.name.includes(value))
+          .sort(
+            (a, b) =>
+              parseInt(b.cpu) - parseInt(a.cpu) &&
+              parseInt(b.memory) - parseInt(a.memory),
+          )
+      : [];
+  }
+
+  async function getLogs(value: string) {
+    const pods = getPods(value)[0];
+
+    const webview = new WebviewWindow(value, {
+      url: "/logs?deployment=" + pods.name,
+      title: value,
+      focus: true,
+      minWidth: 1920,
+      minHeight: 1080,
+    });
+  }
+</script>
+
+{#snippet getPodsSnippet(value: string)}
+  <div class="grid grid-flow-row-dense grid-cols-3 grid-rows-3">
+    <div>Pod name</div>
+    <div>CPU</div>
+    <div>Memory</div>
+    {#each getPods(value) as pod}
+      <div>{pod.name}</div>
+      <div>{pod.cpu}</div>
+      <div>{pod.memory}</div>
+    {/each}
+  </div>
+{/snippet}
+
+<div class=" mx-auto">
+  <div class="flex items-center justify-items-start space-x-3">
+    <h2 class="text-xl font-semibold mb-2">Deployments</h2>
+    <button
+      class="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600"
+      onclick={() => getDeployments()}>refresh</button
+    >
+  </div>
+  <ul class="space-y-2" bind:this={deploymentsElement}>
+    {#if deployments?.deployments}
+      {#each deployments?.deployments.items as deployment}
+        <li class="p-2 shadow-md">
+          <div class="flex flex-row justify-between items-center">
+            <div
+              class=" flex flex-row justify-items-start items-center space-x-2 w-full"
+            >
+              <div class=" text-base font-medium">
+                {deployment.metadata.name}
+              </div>
+              <div class="text-sm text-gray-100">
+                {deployment.metadata.creationTimestamp}
+              </div>
+              <button
+                class="text-sm text-gray-100 bg-green-500 px-4 rounded hover:bg-green-600"
+                onclick={() => {
+                  showReplicas = showReplicas.includes(deployment.metadata.name)
+                    ? showReplicas.filter((e) => e !== deployment.metadata.name)
+                    : [...showReplicas, deployment.metadata.name];
+                }}
+              >
+                Replicas: {deployment.spec.replicas}
+              </button>
+            </div>
+
+            <button
+              class="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600"
+              onclick={() => getLogs(deployment.metadata.name)}
+            >
+              Logs
+            </button>
+          </div>
+          {#if showReplicas.includes(deployment.metadata.name)}
+            {@render getPodsSnippet(deployment.metadata.name)}
+          {/if}
+        </li>
+      {/each}
+    {:else}
+      {#each Array.from(Array(10).keys()) as i}
+        <div class="animate-pulse flex space-x-4 space-y-4">
+          <div class="h-6 w-full shadow-md rounded p-2"></div>
+        </div>
+      {/each}
+    {/if}
+  </ul>
+</div>

@@ -1,0 +1,8 @@
+{
+  "serverPlaceholder": "server",
+  "usernamePlaceholder": "username",
+  "passwordPlaceholder": "password",
+  "loginButton": "login",
+  "loadingText": "Loading...",
+  "logoutButton": "Logout"
+}
