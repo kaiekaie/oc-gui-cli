@@ -9,7 +9,7 @@
   });
 
   let project = $state<string | null>(null);
-  let showSelect = $state(false);
+
   let searchText = $state("");
   let oldSearch = $state<string[]>([]);
 

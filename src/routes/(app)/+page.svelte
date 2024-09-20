@@ -8,6 +8,7 @@
   import { appWindow, LogicalSize } from "@tauri-apps/api/window";
 
   import deployments, { getDeployments } from "$lib/deployments.svelte";
+    import Table from "$lib/components/Table.svelte";
   let showReplicas = $state<string[]>([]);
   let deploymentsElement: HTMLElement;
   onMount(async () => {
@@ -55,16 +56,17 @@
 </script>
 
 {#snippet getPodsSnippet(value: string)}
-  <div class="grid grid-flow-row-dense grid-cols-3 grid-rows-3">
-    <div>Pod name</div>
-    <div>CPU</div>
-    <div>Memory</div>
-    {#each getPods(value) as pod}
-      <div>{pod.name}</div>
-      <div>{pod.cpu}</div>
-      <div>{pod.memory}</div>
-    {/each}
-  </div>
+  	{#snippet header()}
+		<th>Pod Name</th>
+		<th>Cpu</th>
+		<th>Memory</th>
+	{/snippet}
+   	{#snippet row(item)}
+		<td>{item.name}</td>
+		<td>{item.cpu}</td>
+		<td>{item.memory}</td>
+	{/snippet}
+<Table data={getPods(value)} {header} {row} />
 {/snippet}
 
 <div class=" mx-auto">
@@ -102,7 +104,7 @@
             </div>
 
             <button
-              class="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600"
+              class="button"
               onclick={() => getLogs(deployment.metadata.name)}
             >
               Logs
