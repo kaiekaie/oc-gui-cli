@@ -88,24 +88,29 @@
             <p class="font-mono text-sm w-fit">{line}</p>
           </div>
         {/each}
+    
       </div>
     {/if}
-    {#if logsFollow.length && !moreScroll && !autoRefresh}
-      has more: {logsFollow.length}
-      <button
-        onclick={() => {
-          logs = logs.concat(logsFollow);
-          logsFollow = [];
-        }}
-      >
-        Add more
-      </button>
-    {/if}
-    <button
-      class="bg-blue-500 my-2 text-white px-4 py-2 rounded hover:bg-blue-700 active:bg-blue-800 transition duration-300"
-      onclick={toggleAutoRefresh}
-    >
-      {autoRefresh ? "Stop Auto Refresh" : "Start Auto Refresh"}
-    </button>
+        <div class=" bg-blue-500 w-full flex justify-center">
+          <div>
+          {#if logsFollow.length && !moreScroll && !autoRefresh}
+            has more: {logsFollow.length}
+            <button
+              onclick={() => {
+                logs = logs.concat(logsFollow);
+                logsFollow = [];
+              }}
+            >
+              Add more
+            </button>
+          {/if}
+          <button
+            class=" my-2 text-white px-4 py-2 rounded hover:bg-blue-700 active:bg-blue-800 transition duration-300"
+            onclick={toggleAutoRefresh}
+          >
+            {autoRefresh ? "Stop Auto Refresh" : "Start Auto Refresh"}
+          </button>
+          </div>
+        </div>
   </div>
 </div>

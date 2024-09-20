@@ -24,7 +24,7 @@
 
 {#if selected}
   <div
-    class="relative text-base"
+    class="relative text-base w-1/2"
     use:clickOutside
     onclick_outside={(e) => {
       showDropDown = false;
@@ -37,7 +37,7 @@
         showDropDown = !showDropDown;
         onShowDropdown(showDropDown);
       }}
-      class="p-2 text-center bg-neutral-800 rounded w-full hover:bg-neutral-700"
+      class="p-2 text-center bg-neutral-800  w-full hover:bg-neutral-700"
     >
       {selected}
     </button>
@@ -47,15 +47,15 @@
       bind:value
       onkeydown={onSearch}
       placeholder="Search projects..."
-      class="p-2 px-6 border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+      class="p-2  w-full  border-none  bg-neutral-800   focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
     />
     <div
       class:hidden={!showDropDown}
-      class="overflow-y-scroll mt-1 max-h-96 absolute bg-neutral-800 no-scrollbar"
+      class="overflow-y-scroll max-h-96 absolute shadow bg-neutral-800  no-scrollbar"
     >
       {#each list as item}
         <button
-          class:bg-neutral-700={selected.includes(item)}
+          class:bg-neutral-600={selected.includes(item)}
           onclick={(e) => {
             onSelected(item);
             showDropDown = false;
