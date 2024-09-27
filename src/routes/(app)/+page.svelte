@@ -6,16 +6,15 @@
 
   import { listen } from "@tauri-apps/api/event";
 
-
   import deployments, { getDeployments } from "$lib/deployments.svelte";
-    import Table from "$lib/components/Table.svelte";
+  import Table from "$lib/components/Table.svelte";
   let showReplicas = $state<string[]>([]);
   let deploymentsElement: HTMLElement;
   onMount(async () => {
     await getDeployments();
     await invoke("init_process", { seconds: 60 });
 
-   console.log(deployments)
+    console.log(deployments);
 
     const unlisten = await listen("event-name", async (event) => {
       await getDeployments();
@@ -38,8 +37,10 @@
       : [];
   }
 
-  async function getLogs(value: string,getBiggest:boolean) {
-    const pod = getBiggest ?  getPods(value)[0]?.name : getPods(value).filter((e => e.name === value))[0]?.name;
+  async function getLogs(value: string, getBiggest: boolean) {
+    const pod = getBiggest
+      ? getPods(value)[0]?.name
+      : getPods(value).filter((e) => e.name === value)[0]?.name;
 
     const webview = new WebviewWindow(value, {
       url: "/logs?deployment=" + pod,
@@ -52,19 +53,22 @@
 </script>
 
 {#snippet getPodsSnippet(value: string)}
-  	{#snippet header()}
-		<th>Pod Name</th>
-		<th>Cpu</th>
-		<th>Memory</th>
-	{/snippet}
-   	{#snippet row(item)}
-      
-		<td><button class="hover:bg-slate-600" onclick={() => getLogs(item.name,false)}>{item.name}</button></td>
-		<td>{item.cpu}</td>
-		<td>{item.memory}</td>
-
-	{/snippet}
-<Table data={getPods(value)} {header} {row} />
+  {#snippet header()}
+    <th>Pod Name</th>
+    <th>Cpu</th>
+    <th>Memory</th>
+  {/snippet}
+  {#snippet row(item)}
+    <td
+      ><button
+        class="hover:bg-slate-600"
+        onclick={() => getLogs(item.name, false)}>{item.name}</button
+      ></td
+    >
+    <td>{item.cpu}</td>
+    <td>{item.memory}</td>
+  {/snippet}
+  <Table data={getPods(value)} {header} {row} />
 {/snippet}
 
 <div class=" mx-auto">
@@ -89,7 +93,7 @@
               <div class="text-sm text-gray-100">
                 {deployment.metadata.creationTimestamp}
               </div>
-                     <div class="text-sm text-gray-100">
+              <div class="text-sm text-gray-100">
                 {deployment.spec.template.spec.containers[0].image}
               </div>
               <button
@@ -106,15 +110,13 @@
 
             <button
               class="button"
-              onclick={() => getLogs(deployment.metadata.name,true)}
+              onclick={() => getLogs(deployment.metadata.name, true)}
             >
               Logs
             </button>
           </div>
           {#if showReplicas.includes(deployment.metadata.name)}
-       
             {@render getPodsSnippet(deployment.metadata.name)}
-         
           {/if}
         </li>
       {/each}
