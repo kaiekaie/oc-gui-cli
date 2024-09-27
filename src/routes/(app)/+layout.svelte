@@ -69,7 +69,7 @@
   async function logout() {
     authState.loggedIn = false;
     authState.username = "";
-    const serverType = await loginCommand.executeCommand("run-oc", ["logout"]);
+    await loginCommand.executeCommand("run-oc", ["logout"]);
   }
 </script>
 
