@@ -66,9 +66,7 @@
     projectState.projects = oldSearch;
     searchText = "";
   }}
-  onShowDropdown={(e) => {
-    console.log("showDropdown", e);
-  }}
+
   list={projectState.projects}
   bind:value={searchText}
   selected={project}

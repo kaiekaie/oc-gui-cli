@@ -54,3 +54,46 @@ interface Status {
 interface Metadata2 {
   resourceVersion: string;
 }
+
+
+
+ interface Config {
+   kind: string;
+   apiVersion: string;
+   preferences: Preferences;
+   clusters: Cluster[];
+   users: User[];
+   contexts: Context[];
+   "current-context": string;
+ }
+
+ interface Preferences {}
+
+ interface Cluster {
+   name: string;
+   cluster: Cluster2;
+ }
+
+ interface Cluster2 {
+   server: string;
+ }
+
+ interface User {
+   name: string;
+   user: User2;
+ }
+
+ interface User2 {
+   token?: string;
+ }
+
+ interface Context {
+   name: string;
+   context: Context2;
+ }
+
+ interface Context2 {
+   cluster: string;
+   user: string;
+   namespace: string;
+ }

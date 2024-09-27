@@ -4,22 +4,26 @@
     list: string[];
     selected: string | null;
     value: string;
+    showSelected?:boolean,
+    required?:boolean,
     onSelected: (e: string) => void;
     onClickOutside: (show: boolean) => void;
-    onShowDropdown: (show: boolean) => void;
+    onShowDropdown?: (show: boolean) => void;
     onSearch: (e: KeyboardEvent) => void;
   }
   let {
     list,
     selected,
     value = $bindable(),
+    showSelected = false,
+    required = false,
     onSelected,
     onClickOutside,
     onShowDropdown,
     onSearch,
   }: Props = $props();
 
-  let showDropDown = $state(false);
+  let showDropDown = $state(showSelected);
 </script>
 
 {#if selected}
@@ -35,7 +39,10 @@
       class:hidden={showDropDown}
       onclick={(e) => {
         showDropDown = !showDropDown;
-        onShowDropdown(showDropDown);
+        if(onShowDropdown){
+          onShowDropdown(showDropDown);
+        }
+
       }}
       class="p-2 text-center bg-neutral-800  w-full hover:bg-neutral-700"
     >
@@ -45,6 +52,7 @@
       type="text"
       class:hidden={!showDropDown}
       bind:value
+      {required}
       onkeydown={onSearch}
       placeholder="Search projects..."
       class="p-2  w-full  border-none  bg-neutral-800   focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"

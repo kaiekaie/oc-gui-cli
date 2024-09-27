@@ -5,22 +5,17 @@
   import { invoke } from "@tauri-apps/api";
 
   import { listen } from "@tauri-apps/api/event";
-  import { appWindow, LogicalSize } from "@tauri-apps/api/window";
 
   import deployments, { getDeployments } from "$lib/deployments.svelte";
-    import Table from "$lib/components/Table.svelte";
+  import Table from "$lib/components/Table.svelte";
   let showReplicas = $state<string[]>([]);
   let deploymentsElement: HTMLElement;
   onMount(async () => {
     await getDeployments();
     await invoke("init_process", { seconds: 60 });
 
-    await appWindow.setSize(
-      new LogicalSize(
-        deploymentsElement.offsetWidth,
-        deploymentsElement.offsetHeight,
-      ),
-    );
+    console.log(deployments);
+
     const unlisten = await listen("event-name", async (event) => {
       await getDeployments();
     });
@@ -42,11 +37,13 @@
       : [];
   }
 
-  async function getLogs(value: string) {
-    const pods = getPods(value)[0];
+  async function getLogs(value: string, getBiggest: boolean) {
+    const pod = getBiggest
+      ? getPods(value)[0]?.name
+      : getPods(value).filter((e) => e.name === value)[0]?.name;
 
     const webview = new WebviewWindow(value, {
-      url: "/logs?deployment=" + pods.name,
+      url: "/logs?deployment=" + pod,
       title: value,
       focus: true,
       minWidth: 1920,
@@ -56,17 +53,22 @@
 </script>
 
 {#snippet getPodsSnippet(value: string)}
-  	{#snippet header()}
-		<th>Pod Name</th>
-		<th>Cpu</th>
-		<th>Memory</th>
-	{/snippet}
-   	{#snippet row(item)}
-		<td>{item.name}</td>
-		<td>{item.cpu}</td>
-		<td>{item.memory}</td>
-	{/snippet}
-<Table data={getPods(value)} {header} {row} />
+  {#snippet header()}
+    <th>Pod Name</th>
+    <th>Cpu</th>
+    <th>Memory</th>
+  {/snippet}
+  {#snippet row(item)}
+    <td
+      ><button
+        class="hover:bg-slate-600"
+        onclick={() => getLogs(item.name, false)}>{item.name}</button
+      ></td
+    >
+    <td>{item.cpu}</td>
+    <td>{item.memory}</td>
+  {/snippet}
+  <Table data={getPods(value)} {header} {row} />
 {/snippet}
 
 <div class=" mx-auto">
@@ -91,6 +93,9 @@
               <div class="text-sm text-gray-100">
                 {deployment.metadata.creationTimestamp}
               </div>
+              <div class="text-sm text-gray-100">
+                {deployment.spec.template.spec.containers[0].image}
+              </div>
               <button
                 class="text-sm text-gray-100 bg-green-500 px-4 rounded hover:bg-green-600"
                 onclick={() => {
@@ -105,7 +110,7 @@
 
             <button
               class="button"
-              onclick={() => getLogs(deployment.metadata.name)}
+              onclick={() => getLogs(deployment.metadata.name, true)}
             >
               Logs
             </button>
