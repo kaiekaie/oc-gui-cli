@@ -12,12 +12,15 @@
     output: "",
   });
 
+  let servers = $state<string[]>([]);
+
   const status = new CommandState();
   const serverType = new CommandState();
   const loginCommand = new CommandState();
-
+  const clusterCommand = new CommandState();
   onMount(async () => {
     await whoami();
+    await getClusters();
   });
 
   async function whoami() {
@@ -30,6 +33,18 @@
     authState.server = serverType.commandState.data.replaceAll("\n", "");
     authState.loggedIn = status.commandState.error ? false : true;
     authState.username = status.commandState.data;
+  }
+
+  async function getClusters() {
+    await clusterCommand.executeCommand("run-oc", [
+      "config",
+      "view",
+      "-o",
+      "json",
+    ]);
+
+    const config = JSON.parse(clusterCommand.commandState.data) as Config;
+    servers = config.clusters.map((e) => e.cluster?.server);
   }
 
   async function loginFunc(event: Event) {
@@ -66,6 +81,9 @@
       class="bg-gray-800 p-6 rounded-lg shadow-md w-96"
       onsubmit={loginFunc}
     >
+      {#each servers as server}
+        <div class="text-sm">{server}</div>
+      {/each}
       <input
         required
         placeholder="server"
