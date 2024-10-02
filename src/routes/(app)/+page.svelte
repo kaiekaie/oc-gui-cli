@@ -14,7 +14,7 @@
     await getDeployments();
     await invoke("init_process", { seconds: 60 });
 
-    console.log(deployments)
+
 
     const unlisten = await listen("event-name", async (event) => {
       await getDeployments();
@@ -52,6 +52,7 @@
   }
 </script>
 
+<<<<<<< HEAD
 {#snippet podsTableSnippet(value: string)}
   {#snippet header()}
     <th>Pod Name</th>
@@ -71,6 +72,23 @@
         onclick={() => getLogs(item.name, false)}>Log</button
       ></td
     >
+=======
+{#snippet getPodsSnippet(value: string)}
+  {#snippet header()}
+    <th>Pod Name</th>
+    <th>Cpu</th>
+    <th>Memory</th>
+  {/snippet}
+  {#snippet row(item)}
+    <td
+      ><button
+        class="hover:bg-slate-600"
+        onclick={() => getLogs(item.name, false)}>{item.name}</button
+      ></td
+    >
+    <td>{item.cpu}</td>
+    <td>{item.memory}</td>
+>>>>>>> d0528228a65a9f2dd837663687cdefa8f7e98917
   {/snippet}
   <Table data={getPods(value)} {header} {row} />
 {/snippet}
@@ -95,6 +113,9 @@
                 {deployment.metadata.name}
               </div>
             
+              <div class="text-sm text-gray-100">
+                {deployment.spec.template.spec.containers[0].image}
+              </div>
               <div class="text-sm text-gray-100">
                 {deployment.spec.template.spec.containers[0].image}
               </div>
