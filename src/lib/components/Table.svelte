@@ -7,7 +7,7 @@ let { data, header, row }: {
 	} = $props();
 </script>
 
-<table class="table-auto w-full">
+<table class=" w-full bg-slate-800">
 	{#if header}
 		<thead>
 			<tr>{@render header()}</tr>
@@ -16,7 +16,7 @@ let { data, header, row }: {
 
 	<tbody>
 		{#each data as d}
-			<tr>{@render row(d)}</tr>
+			<tr >{@render row(d)}</tr>
 		{/each}
 	</tbody>
 </table>

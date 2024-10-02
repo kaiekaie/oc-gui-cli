@@ -15,6 +15,7 @@ export class CommandState {
     this.commandState.error = null;
     this.commandState.data = null;
     let output = await cmd.execute();
+
     if (output.stderr) {
       this.commandState.error = output.stderr;
     }
