@@ -7,10 +7,12 @@
     "dev": "vite dev",
     "build": "vite build",
     "preview": "vite preview",
+    "test": "echo ok",
     "check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
     "check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
     "tauri": "tauri",
-    "tauri:dev": "tauri dev"
+    "tauri:dev": "tauri dev",
+    "prepare": "husky"
   },
   "license": "MIT",
   "dependencies": {
@@ -22,6 +24,7 @@
     "@sveltejs/vite-plugin-svelte": "^4.0.0-next.6",
     "@tauri-apps/cli": "^1.6.1",
     "autoprefixer": "^10.4.20",
+    "husky": "^9.1.6",
     "postcss": "^8.4.41",
     "prettier": "^3.3.3",
     "prettier-plugin-svelte": "^3.2.6",

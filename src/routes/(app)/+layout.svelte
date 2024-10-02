@@ -4,64 +4,15 @@
   import Loading from "$lib/components/Loading.svelte";
   import Select from "$lib/components/Select.svelte";
 
-<<<<<<< HEAD
 
   let { children } = $props();
 
-=======
-  let servers = $state<string[]>([]);
-
-  const status = new CommandState();
-  const serverType = new CommandState();
-  const loginCommand = new CommandState();
-  const clusterCommand = new CommandState();
->>>>>>> d0528228a65a9f2dd837663687cdefa8f7e98917
   onMount(async () => {
     await whoami();
     await getClusters();
   });
 
 
-<<<<<<< HEAD
-
-=======
-  async function getClusters() {
-    await clusterCommand.executeCommand("run-oc", [
-      "config",
-      "view",
-      "-o",
-      "json",
-    ]);
-
-    const config = JSON.parse(clusterCommand.commandState.data) as Config;
-    servers = config.clusters.map((e) => e.cluster?.server);
-  }
-
-  async function loginFunc(event: Event) {
-    event.preventDefault();
-    login.output = "";
-    await loginCommand.executeCommand("run-oc", [
-      "login",
-      authState.server,
-      "--password",
-      login.password,
-      "--username",
-      login.username,
-    ]);
-    login.output =
-      loginCommand.commandState.error || loginCommand.commandState.data;
-
-    if (loginCommand.commandState.data) {
-      await whoami();
-      loginCommand.commandState.loading = false;
-    }
-  }
-  async function logout() {
-    authState.loggedIn = false;
-    authState.username = "";
-    await loginCommand.executeCommand("run-oc", ["logout"]);
-  }
->>>>>>> d0528228a65a9f2dd837663687cdefa8f7e98917
 </script>
 
 {#if authState.loggedIn !== null && authState.loggedIn === false}
@@ -72,11 +23,7 @@
       class="bg-gray-800 p-6 rounded-lg shadow-md w-96"
       onsubmit={loginFunc}
     >
-<<<<<<< HEAD
       {#each servers.servers as server}
-=======
-      {#each servers as server}
->>>>>>> d0528228a65a9f2dd837663687cdefa8f7e98917
         <div class="text-sm">{server}</div>
       {/each}
       <input
