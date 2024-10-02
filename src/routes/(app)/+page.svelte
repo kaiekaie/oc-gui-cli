@@ -9,12 +9,12 @@
   import deployments, { getDeployments } from "$lib/deployments.svelte";
   import Table from "$lib/components/Table.svelte";
   let showReplicas = $state<string[]>([]);
-  let deploymentsElement: HTMLElement;
+
   onMount(async () => {
     await getDeployments();
     await invoke("init_process", { seconds: 60 });
 
-    console.log(deployments);
+
 
     const unlisten = await listen("event-name", async (event) => {
       await getDeployments();
@@ -52,21 +52,25 @@
   }
 </script>
 
-{#snippet getPodsSnippet(value: string)}
+{#snippet podsTableSnippet(value: string)}
   {#snippet header()}
     <th>Pod Name</th>
+    <th>Created</th>
     <th>Cpu</th>
     <th>Memory</th>
+    <th>Logs</th>
   {/snippet}
   {#snippet row(item)}
-    <td
-      ><button
-        class="hover:bg-slate-600"
-        onclick={() => getLogs(item.name, false)}>{item.name}</button
-      ></td
-    >
+    <td>{item.name}</td>
+    <td>{item.created}</td>
     <td>{item.cpu}</td>
     <td>{item.memory}</td>
+        <td class="w-[0%]"
+      ><button
+        class="hover:bg-slate-600 px-2 bg-sky-600 rounded"
+        onclick={() => getLogs(item.name, false)}>Log</button
+      ></td
+    >
   {/snippet}
   <Table data={getPods(value)} {header} {row} />
 {/snippet}
@@ -79,7 +83,7 @@
       onclick={() => getDeployments()}>refresh</button
     >
   </div>
-  <ul class="space-y-2" bind:this={deploymentsElement}>
+  <ul class="space-y-2">
     {#if deployments?.deployments}
       {#each deployments?.deployments.items as deployment}
         <li class="p-2 shadow-md">
@@ -87,11 +91,12 @@
             <div
               class=" flex flex-row justify-items-start items-center space-x-2 w-full"
             >
-              <div class=" text-base font-medium">
+              <div class=" text-base font-bold">
                 {deployment.metadata.name}
               </div>
+            
               <div class="text-sm text-gray-100">
-                {deployment.metadata.creationTimestamp}
+                {deployment.spec.template.spec.containers[0].image}
               </div>
               <div class="text-sm text-gray-100">
                 {deployment.spec.template.spec.containers[0].image}
@@ -116,7 +121,7 @@
             </button>
           </div>
           {#if showReplicas.includes(deployment.metadata.name)}
-            {@render getPodsSnippet(deployment.metadata.name)}
+            {@render podsTableSnippet(deployment.metadata.name)}
           {/if}
         </li>
       {/each}
