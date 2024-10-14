@@ -61,7 +61,6 @@ export async function getDeployments() {
       (pod) =>
         (pod = { ...pod, ...podsCreated.find((p) => p.name === pod.name) }),
     );
-
     deployments.deployments = JSON.parse(deploymentsOutput.stdout);
   }
 }

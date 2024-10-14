@@ -13,9 +13,6 @@
   onMount(async () => {
     await getDeployments();
     await invoke("init_process", { seconds: 60 });
-
-
-
     const unlisten = await listen("event-name", async (event) => {
       await getDeployments();
     });
@@ -50,6 +47,16 @@
       minHeight: 1080,
     });
   }
+
+  async function getEnv(value: string, yaml: boolean) {
+    const webview = new WebviewWindow(value, {
+      url: `/env?deployment=${value}&yaml=${yaml}`,
+      title: value,
+      focus: true,
+      minWidth: 1080,
+      minHeight: 720,
+    });
+  }
 </script>
 
 {#snippet podsTableSnippet(value: string)}
@@ -65,7 +72,7 @@
     <td>{item.created}</td>
     <td>{item.cpu}</td>
     <td>{item.memory}</td>
-        <td class="w-[0%]"
+    <td class="w-[0%]"
       ><button
         class="hover:bg-slate-600 px-2 bg-sky-600 rounded"
         onclick={() => getLogs(item.name, false)}>Log</button
@@ -87,20 +94,18 @@
     {#if deployments?.deployments}
       {#each deployments?.deployments.items as deployment}
         <li class="p-2 shadow-md">
-          <div class="flex flex-row justify-between items-center">
+          <div class="flex flex-row justify-between space-x-2 items-center">
             <div
               class=" flex flex-row justify-items-start items-center space-x-2 w-full"
             >
               <div class=" text-base font-bold">
                 {deployment.metadata.name}
               </div>
-            
+
               <div class="text-sm text-gray-100">
                 {deployment.spec.template.spec.containers[0].image}
               </div>
-              <div class="text-sm text-gray-100">
-                {deployment.spec.template.spec.containers[0].image}
-              </div>
+
               <button
                 class="text-sm text-gray-100 bg-green-500 px-4 rounded hover:bg-green-600"
                 onclick={() => {
@@ -112,7 +117,22 @@
                 Replicas: {deployment.spec.replicas}
               </button>
             </div>
-
+            {#if !deployment.metadata?.ownerReferences}
+              <button
+                class="p-2 rounded-md bg-lime-600 hover:bg-lime-700"
+                onclick={() => getEnv(deployment.metadata.name, false)}
+              >
+                Env
+              </button>
+            {:else}
+              <button
+                class="p-2 rounded-md bg-lime-500 hover:bg-lime-600"
+                onclick={() =>
+                  getEnv(deployment.metadata.ownerReferences[0].name, true)}
+              >
+                Yaml
+              </button>
+            {/if}
             <button
               class="button"
               onclick={() => getLogs(deployment.metadata.name, true)}

@@ -16,6 +16,7 @@ interface Item {
 interface Metadata {
   annotations: Annotations;
   namespace: string;
+  ownerReferences: any;
   creationTimestamp: string;
   labels: Labels;
   name: string;
@@ -55,45 +56,43 @@ interface Metadata2 {
   resourceVersion: string;
 }
 
+interface Config {
+  kind: string;
+  apiVersion: string;
+  preferences: Preferences;
+  clusters: Cluster[];
+  users: User[];
+  contexts: Context[];
+  "current-context": string;
+}
 
+interface Preferences {}
 
- interface Config {
-   kind: string;
-   apiVersion: string;
-   preferences: Preferences;
-   clusters: Cluster[];
-   users: User[];
-   contexts: Context[];
-   "current-context": string;
- }
+interface Cluster {
+  name: string;
+  cluster: Cluster2;
+}
 
- interface Preferences {}
+interface Cluster2 {
+  server: string;
+}
 
- interface Cluster {
-   name: string;
-   cluster: Cluster2;
- }
+interface User {
+  name: string;
+  user: User2;
+}
 
- interface Cluster2 {
-   server: string;
- }
+interface User2 {
+  token?: string;
+}
 
- interface User {
-   name: string;
-   user: User2;
- }
+interface Context {
+  name: string;
+  context: Context2;
+}
 
- interface User2 {
-   token?: string;
- }
-
- interface Context {
-   name: string;
-   context: Context2;
- }
-
- interface Context2 {
-   cluster: string;
-   user: string;
-   namespace: string;
- }
+interface Context2 {
+  cluster: string;
+  user: string;
+  namespace: string;
+}
