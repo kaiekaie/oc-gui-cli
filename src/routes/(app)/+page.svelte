@@ -13,6 +13,7 @@
   onMount(async () => {
     await getDeployments();
     await invoke("init_process", { seconds: 60 });
+    console.log(deployments.deployments);
     const unlisten = await listen("event-name", async (event) => {
       await getDeployments();
     });
@@ -39,22 +40,34 @@
       ? getPods(value)[0]?.name
       : getPods(value).filter((e) => e.name === value)[0]?.name;
 
-    const webview = new WebviewWindow(value, {
+    const webview = new WebviewWindow(value + "-logs", {
       url: "/logs?deployment=" + pod,
-      title: value,
+      title: value + " logs",
       focus: true,
       minWidth: 1920,
       minHeight: 1080,
     });
+    webview.once("tauri://created", function () {
+      console.log("webview window successfully created");
+    });
+    webview.once("tauri://error", function (e) {
+      console.log("webview window error", e);
+    });
   }
 
   async function getEnv(value: string, yaml: boolean) {
-    const webview = new WebviewWindow(value, {
+    const webview = new WebviewWindow(value + "-env", {
       url: `/env?deployment=${value}&yaml=${yaml}`,
-      title: value,
-      focus: true,
+      title: value + " Environment",
+      focus: false,
       minWidth: 1080,
       minHeight: 720,
+    });
+    webview.once("tauri://created", function () {
+      console.log("webview window successfully created");
+    });
+    webview.once("tauri://error", function (e) {
+      console.log("webview window error", e);
     });
   }
 </script>

@@ -82,6 +82,7 @@ const jsonValidator = (str) => {
     JSON.parse(str);
     return true;
   } catch (e) {
+    console.log(e);
     environment.jsonParseError = e.message;
     return false;
   }

@@ -40,6 +40,7 @@ export async function getClusters() {
   ]);
 
   const config = JSON.parse(clusterCommand.commandState.data) as Config;
+
   servers.servers = config.clusters.map((e) => e.cluster?.server);
 }
 
@@ -71,7 +72,7 @@ export async function loginFunc(event: Event) {
 
   login.login.output =
     loginCommand.commandState.error || loginCommand.commandState.data;
-  console.log(loginCommand.commandState.data);
+
   if (!loginCommand.commandState.data.includes("401")) {
     loginCommand.commandState.loading = false;
     login.login.output = "";

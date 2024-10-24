@@ -1,18 +1,32 @@
 <script lang="ts">
   import { onMount } from "svelte";
-  import authState, { whoami ,status, loginFunc, getClusters, servers, login, loginCommand, logout } from "$lib/authState.svelte";
+  import authState, {
+    whoami,
+    status,
+    loginFunc,
+    getClusters,
+    servers,
+    login,
+    loginCommand,
+    logout,
+  } from "$lib/authState.svelte";
   import Loading from "$lib/components/Loading.svelte";
   import Select from "$lib/components/Select.svelte";
-
+  import { listen } from "@tauri-apps/api/event";
 
   let { children } = $props();
 
   onMount(async () => {
-    await whoami();
     await getClusters();
+    await whoami();
+    const unlisten = await listen("event-name", async (event) => {
+      await whoami();
+    });
+
+    () => {
+      unlisten();
+    };
   });
-
-
 </script>
 
 {#if authState.loggedIn !== null && authState.loggedIn === false}
